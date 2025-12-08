@@ -7,10 +7,9 @@ import { Observable } from 'rxjs';
 })
 export class ThingsboardTestService {
 
-  // ⬇️👉 CHANGE THESE THREE VALUES TO MATCH YOUR SETUP 👈⬇️
-  private tbBaseUrl = 'https://demo.thingsboard.io';        // e.g. 'http://localhost:8080' or 'https://demo.thingsboard.io'
+  private tbBaseUrl = 'https://demo.thingsboard.io';
   private jwtToken  = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtZXBqMDRAZ21haWwuY29tIiwidXNlcklkIjoiNzcxY2E1NTAtOTg1YS0xMWYwLWE5YjUtNzkyZTIxOTRhNWQ0Iiwic2NvcGVzIjpbIlRFTkFOVF9BRE1JTiJdLCJzZXNzaW9uSWQiOiJhMmUyODY4Yy05YWUyLTQzYzktYWZjMS02ZDRmOGRkNDVmMTUiLCJleHAiOjE3NjY5ODEzMDMsImlzcyI6InRoaW5nc2JvYXJkLmlvIiwiaWF0IjoxNzY1MTgxMzAzLCJmaXJzdE5hbWUiOiJNYXRoaWFzIiwibGFzdE5hbWUiOiJKZW5zZW4iLCJlbmFibGVkIjp0cnVlLCJwcml2YWN5UG9saWN5QWNjZXB0ZWQiOnRydWUsImlzUHVibGljIjpmYWxzZSwidGVuYW50SWQiOiI3NzA2YWM1MC05ODVhLTExZjAtYTliNS03OTJlMjE5NGE1ZDQiLCJjdXN0b21lcklkIjoiMTM4MTQwMDAtMWRkMi0xMWIyLTgwODAtODA4MDgwODA4MDgwIn0.zRLzeKC-C3iO90XAXJ7wnIXKC84Ntwws164na4xx0IByxKzhJohtaQ2OpsygRF48bbisNy_LLwpvRq6NYKCXeg';          // JWT from /api/auth/login (NOT device token)
-  private deviceId  = '37767a50-985c-11f0-a9b5-792e2194a5d4';    // Device ID (UUID) from TB UI
+  private deviceId  = '37767a50-985c-11f0-a9b5-792e2194a5d4';
 
   constructor(private http: HttpClient) {}
 
@@ -39,8 +38,7 @@ export class ThingsboardTestService {
   return this.http.get(url, { headers });
 }
 
-
-  /** OPTIONAL: test sending telemetry using a device access token (no JWT) */
+// Dette virker ikke
   sendTestTelemetryWithDeviceToken(deviceToken: string): Observable<any> {
     const url = `${this.tbBaseUrl}/api/v1/${deviceToken}/telemetry`;
 
