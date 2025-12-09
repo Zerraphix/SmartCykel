@@ -15,12 +15,9 @@ brake_off_time = 0
 
 def check_brake():
     global ax_prev, brake_off_time
-
+    
     now = ticks_ms()
-
-    # Læs accelerationen fra IMU og konverter til g
-    vals = imu.get_values()
-    ax = vals["acceleration x"] / ACC_SCALE
+    ax = check_acceleration()
 
     # Ændring i acceleration siden sidst.
     delta_a = ax - ax_prev
@@ -34,9 +31,17 @@ def check_brake():
     
     return brake_active
 
+def check_acceleration():
+    # Læs accelerationen fra IMU og konverter til g
+    vals = imu.get_values()
+    ax = vals["acceleration x"] / ACC_SCALE
+    
+    return ax
+
+def get_vals():
+    vals = imu.get_values()
+    acc = vals["acceleration x"], vals["acceleration y"], vals["acceleration z"] 
+    return acc
 
 
 
-
-vals = imu.get_values()
-ax_prev = vals["acceleration x"] / ACC_SCALE

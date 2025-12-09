@@ -33,20 +33,12 @@ def light_off():
     np.write()
     print("light off")
     
-ldr = "MØRKT"
-last_brake_check = True
-while True:
+def alarm_light():
+    pwm.duty_u16(65000)
+    for i in range(antal):
+        np[i] = (255,0,0)
+    np.write()
 
-    if ldr_sensor.DayorNight() != ldr or acceloremeter.check_brake() != last_brake_check:
-        if acceloremeter.check_brake():
-            bremse_lys()
-        elif ldr_sensor.DayorNight() == "MØRKT":
-            mørke_lys()
-        else:
-            light_off()
-        last_brake_check = acceloremeter.check_brake()
-        ldr = ldr_sensor.DayorNight()
-            
-    time.sleep(0.5)
+
 
     
