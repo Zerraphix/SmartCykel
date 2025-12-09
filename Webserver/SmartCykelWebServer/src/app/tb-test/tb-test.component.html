@@ -1,0 +1,93 @@
+<div class="home-wrapper min-vh-100 d-flex flex-column">
+    <!-- Top navbar -->
+    <nav class="navbar navbar-dark bg-dark shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <!-- Optional Bootstrap Icons: bi bi-bicycle -->
+                <span class="brand-logo me-2">🚲</span>
+                <span>SmartBike Hub</span>
+            </a>
+
+            <button class="btn btn-outline-light btn-sm" [routerLink]="['']">
+                Back
+            </button>
+        </div>
+    </nav>
+<div class="container my-4">
+  <div class="row g-4">
+
+    <!-- REST / JWT test card -->
+    <div class="col-12 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">ThingsBoard REST Test (JWT)</h5>
+          <p class="card-text">
+            Calls <code>/api/plugins/telemetry/DEVICE/&lt;deviceId&gt;/values/timeseries</code>
+            with your JWT and shows the raw JSON response.
+          </p>
+
+          <button
+            class="btn btn-primary"
+            (click)="testRestGet()"
+            [disabled]="loadingRest">
+            <span *ngIf="!loadingRest">Test GET latest telemetry</span>
+            <span *ngIf="loadingRest" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span *ngIf="loadingRest">&nbsp;Loading...</span>
+          </button>
+
+          <div class="mt-3" *ngIf="restResult">
+            <h6>Result</h6>
+            <pre class="bg-light p-2 border rounded small">{{ restResult | json }}</pre>
+          </div>
+
+          <div class="mt-3" *ngIf="restError">
+            <h6 class="text-danger">Error</h6>
+            <pre class="bg-light p-2 border rounded small text-danger">{{ restError | json }}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Device token POST test card -->
+    <div class="col-12 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">ThingsBoard Device Token Test</h5>
+          <p class="card-text">
+            Sends a POST to <code>/api/v1/&lt;deviceToken&gt;/telemetry</code> with dummy data
+            <code>{{ '{' }} temperature: 25, humidity: 50 {{ '}' }}</code>.
+          </p>
+
+          <div class="mb-3">
+            <label class="form-label">Device Access Token</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="deviceToken"
+              placeholder="Enter device access token from ThingsBoard device">
+          </div>
+
+          <button
+            class="btn btn-secondary"
+            (click)="testDevicePost()"
+            [disabled]="loadingDevicePost">
+            <span *ngIf="!loadingDevicePost">Send test telemetry</span>
+            <span *ngIf="loadingDevicePost" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span *ngIf="loadingDevicePost">&nbsp;Sending...</span>
+          </button>
+
+          <div class="mt-3" *ngIf="devicePostResult">
+            <h6>Result</h6>
+            <pre class="bg-light p-2 border rounded small">{{ devicePostResult | json }}</pre>
+          </div>
+
+          <div class="mt-3" *ngIf="devicePostError">
+            <h6 class="text-danger">Error</h6>
+            <pre class="bg-light p-2 border rounded small text-danger">{{ devicePostError | json }}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
