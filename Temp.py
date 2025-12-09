@@ -1,5 +1,4 @@
 # temperature
-
 from machine import Pin
 from dht import DHT11
 
