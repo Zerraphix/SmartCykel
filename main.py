@@ -5,6 +5,9 @@ from machine import UART
 
 from gps_module import get_lat_lon
 from battery_simple import read_battery
+import time
+import ldr_sensor
+import acceloremeter
 from uthingsboard.client import TBDeviceMqttClient
 from rc522_test import read_tag, tag_is_allowed
 
@@ -23,6 +26,9 @@ print("Connected.")
 
 SEND_INTERVAL = 30
 counter = 0
+
+ldr = "MØRKT"
+last_brake_check = True
 
 
 while True:
@@ -53,7 +59,17 @@ while True:
 
         counter = 0
 
+        
+    if ldr_sensor.DayorNight() != ldr or acceloremeter.check_brake() != last_brake_check:
+        if acceloremeter.check_brake():
+            bremse_lys()
+        elif ldr_sensor.DayorNight() == "MØRKT":
+            mørke_lys()
+        else:
+            light_off()
+        last_brake_check = acceloremeter.check_brake()
+        ldr = ldr_sensor.DayorNight()
+    
     sleep(1)
     counter += 1
     gc.collect()
-
