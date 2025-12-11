@@ -9,9 +9,10 @@ lcd = GpioLcd(rs_pin=Pin(27), enable_pin=Pin(25),
 
 def lcd_show_status(data):
     soc = data.get("battery_soc", 0)
-    lat = round(data.get("latitude"),2)
-    lon = round(data.get("longitude"),2)
-    speed = round(data.get("speed"),2)
+    if data.get("latitude") != None or get.data("longitude") != None:       
+        lat = round(data.get("latitude"),2)
+        lon = round(data.get("longitude"),2)
+        speed = round(data.get("speed"),2)
     
     lcd.clear()
     lcd.move_to(0,0)
