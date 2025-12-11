@@ -20,7 +20,6 @@ def mørke_lys(): # normal baglygte (svag)
     for i in range(antal): # for forlygte
         np[i] = (255,255,255)
     np.write()
-    print("light on")
 
 def bremse_lys(): # bremse-lys (kraftig)
     pwm.duty_u16(65000) # næsten 100%
@@ -31,7 +30,6 @@ def light_off():
     for i in range(antal): # for forlygte
         np[i] = (0,0,0)
     np.write()
-    print("light off")
     
 def alarm_light():
     pwm.duty_u16(65000)

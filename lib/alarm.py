@@ -21,6 +21,7 @@ def Timed_Alarm():
     for x in range(10):
         tag = rfid.read_tag()
         if tag and rfid.tag_is_allowed(tag):
+            print("Alarm stopped early")
             break
         #gps = gps_module.get_lat_lon()
         #speed = gps[2]
@@ -56,8 +57,10 @@ def Alarm_Lock_System(message):
             solenoid.lock()
             if acceloremeter.check_tamper():
                 Timed_Alarm()
+            sleep(0.5)
         tag = rfid.read_tag()
         if tag and rfid.tag_is_allowed(tag):
             Alarm = False
             Lock = False
-            break
+            print("Unlocked")
+            return False
