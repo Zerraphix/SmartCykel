@@ -34,6 +34,7 @@ counter = 0
 ldr = "MØRKT"
 last_brake_check = True
 
+acceloremeter.init()
 
 while True:
 

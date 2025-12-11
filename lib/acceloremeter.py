@@ -6,23 +6,41 @@ BRAKE_DECEL_THRESHOLD = -0.15 # deacceleration i g der skal til
 BRAKE_HOLD_MS = 800 # hvor længe lyset skal være tændt (ms)
 ACC_SCALE = 16384.0
 
-TAMPER_THRESHOLD = 0.40  # change in g before we say "moved"
+TAMPER_THRESHOLD = 0.50  # change in g before we say "moved"
 
-prev_ax = None
+i2c = None
+imu = None
+
+ax_prev = None                  # til brake-beregning
+prev_ax = None                  # til tamper-check
 prev_ay = None
 prev_az = None
 
-i2c = I2C(0, scl=Pin(22), sda=Pin(21), freq=400000)
-imu = MPU6050(i2c)
-
 brake_off_time = 0
 
+
+def init():
+    global i2c, imu, ax_prev, prev_ax, prev_ay, prev_az, brake_off_time
+
+    i2c = I2C(0, scl=Pin(22), sda=Pin(21), freq=400000)
+    imu = MPU6050(i2c)
+
+    ax_prev = get_vals_g()[0]
+    prev_ax = prev_ay = prev_az = None
+    brake_off_time = 0
+
+def get_vals_g():
+    vals = imu.get_values()
+    ax = vals["acceleration x"] / ACC_SCALE
+    ay = vals["acceleration y"] / ACC_SCALE
+    az = vals["acceleration z"] / ACC_SCALE
+    return ax, ay, az
 
 def check_brake():
     global ax_prev, brake_off_time
     
     now = ticks_ms()
-    ax = check_acceleration()
+    ax = get_vals_g()[0]
 
     # Ændring i acceleration siden sidst.
     delta_a = ax - ax_prev
@@ -36,22 +54,7 @@ def check_brake():
     
     return brake_active
 
-def check_acceleration():
-    # Læs accelerationen fra IMU og konverter til g
-    vals = imu.get_values()
-    ax = vals["acceleration x"] / ACC_SCALE
-    
-    return ax
-
-def get_vals_g():
-    vals = imu.get_values()
-    ax = vals["acceleration x"] / ACC_SCALE
-    ay = vals["acceleration y"] / ACC_SCALE
-    az = vals["acceleration z"] / ACC_SCALE
-    return ax, ay, az
-
 def check_tamper():
-    """Return True if the bike was moved since last check."""
     global prev_ax, prev_ay, prev_az
 
     ax, ay, az = get_vals_g()
@@ -73,4 +76,8 @@ def check_tamper():
 
 
 
+if __name__ == "__main__":
+    init()
+    test = check_tamper()
+    print(test)
 
