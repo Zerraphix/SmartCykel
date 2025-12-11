@@ -36,11 +36,3 @@ def tag_is_allowed(tag):
         return False
     return tag in ALLOWED_TAGS
 
-while True:
-    tag = read_tag()
-    print("Read:", tag)
-    if tag and tag_is_allowed(tag):
-        print("✅ Allowed tag!")
-    elif tag:
-        print("❌ Unknown tag")
-    sleep(0.2)
