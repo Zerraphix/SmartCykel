@@ -9,7 +9,7 @@ import acceloremeter
 #JP1 GND til GND
 antal = 12
 np = NeoPixel(Pin(12, Pin.OUT), antal)
-LED_PIN = 18
+LED_PIN = 4
 
 pwm = PWM(Pin(LED_PIN))
 pwm.freq(1000)
@@ -38,5 +38,4 @@ def alarm_light():
     for i in range(antal):
         np[i] = (255,0,0)
     np.write()
-
 
