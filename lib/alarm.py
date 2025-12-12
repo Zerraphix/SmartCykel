@@ -59,6 +59,7 @@ def request_remote_unlock():
 def perma_alarm_off():
     global Alarm
     Alarm = False
+    send_lock_state()
     print("Alarm turned off")
 
 def Timed_Alarm():
@@ -72,6 +73,7 @@ def Timed_Alarm():
             Lock = False
             remote_unlock_requested = False
             send_lock_state()
+            solenoid.unlock()
             print("Unlocked via RPC (during timed alarm)")
             return
 
@@ -79,6 +81,7 @@ def Timed_Alarm():
         if tag and rfid.tag_is_allowed(tag):
             remote_unlock_requested = False
             send_lock_state()
+            solenoid.unlock()
             print("Alarm stopped early by RFID")
             return
 
@@ -93,6 +96,7 @@ def Alarm_Lock_System(message):
     remote_unlock_requested = False
     Lock = False
     Alarm = False
+    lock_active = False
     if message == "ALARM":
         Alarm = True
     else:
@@ -107,13 +111,21 @@ def Alarm_Lock_System(message):
             lygter.alarm_light()
             buzzer.sound(ALARM_FREQ, BEEP_TIME, PAUSE)
             lygter.light_off()
+            if acceloremeter.is_still() and lock_active != True:
+                print("Lock me")
+                solenoid.lock()
+                Lock = True
+                lock_active = True
 
         if Lock:
-            solenoid.lock()
+            if acceloremeter.is_still() and lock_active != True:
+                print("Lock me")
+                solenoid.lock()
+                lock_active = True
             if acceloremeter.check_tamper():
                 Alarm = True
                 Timed_Alarm()
-            sleep(0.5)
+            sleep(0.2)
 
         tag = rfid.read_tag()
         if tag and rfid.tag_is_allowed(tag):
@@ -121,6 +133,7 @@ def Alarm_Lock_System(message):
             Lock = False
             remote_unlock_requested = False
             send_lock_state()
+            solenoid.unlock()
             print("Unlocked by RFID")
             return False
 
@@ -129,6 +142,7 @@ def Alarm_Lock_System(message):
             Lock = False
             remote_unlock_requested = False
             send_lock_state()
+            solenoid.unlock()
             print("Unlocked via RPC")
             return False
     send_lock_state()
