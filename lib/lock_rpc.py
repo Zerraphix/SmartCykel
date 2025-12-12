@@ -1,8 +1,9 @@
 from uthingsboard.client import TBDeviceMqttClient
 import network, time, gc, secrets
 import alarm
+import solenoid
 
-def create_client(alarm_system):
+def create_client():
     client = TBDeviceMqttClient(
         secrets.SERVER_IP_ADDRESS,
         access_token=secrets.ACCESS_TOKEN
@@ -16,7 +17,11 @@ def create_client(alarm_system):
                 solenoid.unlock()
                 alarm.request_remote_unlock()
             elif method == "lockBikeLock":
-                alarm.Alarm_Lock_System()
+                alarm.Alarm_Lock_System("LOCK")
+            elif method == "alarm":
+                alarm.Alarm_Lock_System("ALARM")
+            elif method == "alarmOff":
+                alarm.perma_alarm_off()
             elif method == "testPrint":
                 print("RPC testPrint modtaget (ingen lås-bevægelse)")
             else:
