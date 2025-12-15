@@ -94,6 +94,10 @@ def is_still(still_for_ms=STILL_FOR_MS):
         return False
     return ticks_diff(ticks_ms(), last_movement_ms) > still_for_ms
 
+def is_still_reset:
+    global last_movement_ms
+    last_movement_ms = 0
+
 
 if __name__ == "__main__":
     init()
