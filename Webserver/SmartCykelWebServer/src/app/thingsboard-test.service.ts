@@ -43,7 +43,6 @@ export class ThingsboardTestService {
     return this.http.get(url, { headers });
   }
 
-// Dette virker ikke
   sendTestTelemetryWithDeviceToken(deviceToken: string): Observable<any> {
     const url = `${this.tbBaseUrl}/api/v1/${deviceToken}/telemetry`;
 

@@ -16,8 +16,6 @@ interface TbPoint {
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-
-  // UI fields used in your template
   isConnected = false;
 
   batteryLevel = 0;          
@@ -89,14 +87,11 @@ export class HomeComponent implements OnInit {
     refreshTelemetry(): void {
     this.tbService.getLatestTelemetry().subscribe({
       next: res => {
-        // mark as connected if we got anything meaningful
         const socPoint = this.getLatest(res, 'battery_soc');
         this.isConnected = !!socPoint;
 
-        // battery level
         this.batteryLevel = socPoint ? Number(socPoint.value) || 0 : 0;
 
-        // other battery fields
         const remText = this.getLatest(res, 'battery_remaining_text');
         this.batteryRemainingText = remText ? String(remText.value) : '';
 
@@ -117,14 +112,12 @@ export class HomeComponent implements OnInit {
           ? charging.value === 'true' || charging.value === true
           : false;
 
-        // speed & temperature
         const speed = this.getLatest(res, 'speed');
         this.speedKph = speed ? Number(speed.value) || null : null;
 
         const temp = this.getLatest(res, 'temperature_c');
         this.temperatureC = temp ? Number(temp.value) || null : null;
 
-        // humidity & location
         const hum = this.getLatest(res, 'humidity');
         this.humidity = hum ? Number(hum.value) || null : null;
 
@@ -134,14 +127,12 @@ export class HomeComponent implements OnInit {
         const lon = this.getLatest(res, 'longitude');
         this.longitude = lon ? Number(lon.value) || null : null;
 
-        // estimated range
         if (this.batteryRemainingHours != null) {
           this.estimatedRangeKm = Math.round(this.batteryRemainingHours * 15);
         } else {
           this.estimatedRangeKm = null;
         }
 
-        // last update time – just use the newest ts we saw
         const allPoints = [
           socPoint, remText, remH, volt, cur, hum, lat, lon, speed, temp
         ].filter(p => !!p) as TbPoint[];
@@ -150,7 +141,6 @@ export class HomeComponent implements OnInit {
           this.lastUpdate = new Date(maxTs);
         }
 
-        // simple last ride placeholder
         this.lastRideSummary =
           this.speedKph != null && this.temperatureC != null
             ? `Speed: ${this.speedKph.toFixed(1)} km/h • Temp: ${this.temperatureC.toFixed(1)} °C • Battery ${this.batteryLevel}%.`

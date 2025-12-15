@@ -28,13 +28,13 @@ def set_rpc_client(client):
 def send_lock_state():
     global rpc_client, Lock, Alarm
     if rpc_client is None:
-        return  # no connection yet
+        return
 
     try:
         state_str = "LOCKED" if Lock else "UNLOCKED"
         payload = {
-            "lock": state_str,   # for nice text on dashboard
-            "lock_bool": Lock,   # for boolean logic if you want it
+            "lock": state_str,
+            "lock_bool": Lock,
             "alarm": Alarm
         }
         
