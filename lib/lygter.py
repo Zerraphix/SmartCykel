@@ -9,7 +9,7 @@ import acceloremeter
 #JP1 GND til GND
 antal = 12
 np = NeoPixel(Pin(12, Pin.OUT), antal)
-LED_PIN = 18
+LED_PIN = 4
 
 pwm = PWM(Pin(LED_PIN))
 pwm.freq(1000)
@@ -20,7 +20,6 @@ def mørke_lys(): # normal baglygte (svag)
     for i in range(antal): # for forlygte
         np[i] = (255,255,255)
     np.write()
-    print("light on")
 
 def bremse_lys(): # bremse-lys (kraftig)
     pwm.duty_u16(65000) # næsten 100%
@@ -31,12 +30,10 @@ def light_off():
     for i in range(antal): # for forlygte
         np[i] = (0,0,0)
     np.write()
-    print("light off")
     
 def alarm_light():
     pwm.duty_u16(65000)
     for i in range(antal):
         np[i] = (255,0,0)
     np.write()
-
 
