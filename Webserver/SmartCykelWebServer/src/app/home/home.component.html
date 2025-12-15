@@ -24,19 +24,8 @@
                         Control your smart bicycle in one place
                     </h1>
                     <p class="lead text-muted">
-                        Quick overview of connection, battery and place of the bike. Underneath you can enable and disable alarm mode.
-                    </p>
-
-                    <!-- Future alarm kontrol, via thingsboard måske -->
-                    <div class="d-flex flex-wrap gap-2 mt-3">
-                        <button class="btn btn-danger" type="button" (click)="onStartRide()">
-                            Start Alarm
-                        </button>
-
-                        <button class="btn btn-success" type="button" (click)="onViewBikes()">
-                            Disable Alarm
-                        </button>
-                    </div>
+                        Get a quick overview of your bike’s connection, battery, location, and security status — all in
+                        one place. </p>
                 </div>
 
                 <!-- Right side: status / cards -->
@@ -111,15 +100,69 @@
                                     <h6 class="card-title text-muted text-uppercase mb-2">
                                         Last Seen
                                     </h6>
+
                                     <p class="mb-1">
                                         {{ lastRideSummary }}
                                     </p>
+
+                                    <p class="small mb-1">
+                                        <strong>Speed:</strong>
+                                        <span *ngIf="speedKph != null; else noSpeed">
+                                            {{ speedKph | number:'1.0-1' }} km/h
+                                        </span>
+                                        <ng-template #noSpeed>
+                                            <span class="text-muted">no speed data</span>
+                                        </ng-template>
+                                    </p>
+
+                                    <p class="small mb-1">
+                                        <strong>Temperature:</strong>
+                                        <span *ngIf="temperatureC != null; else noTemp">
+                                            {{ temperatureC | number:'1.0-1' }} °C
+                                        </span>
+                                        <ng-template #noTemp>
+                                            <span class="text-muted">no temperature data</span>
+                                        </ng-template>
+                                    </p>
+
                                     <p class="small text-muted mb-0" *ngIf="latitude != null && longitude != null">
                                         Last known location from device telemetry.
                                     </p>
                                 </div>
                             </div>
                         </div>
+                        <div class="col-12">
+                            <div class="card card-glass h-100" [class.security-alarm]="alarmActive">
+                                <div
+                                    class="card-body d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                                    <div>
+                                        <h6 class="card-title text-muted text-uppercase mb-2">
+                                            Security
+                                        </h6>
+                                        <p class="mb-1">
+                                            <strong>Lock:</strong>
+                                            <span [ngClass]="{ 'text-success': isLocked, 'text-warning': !isLocked }">
+                                                {{ lockStateText }}
+                                            </span>
+                                        </p>
+                                        <p class="mb-0">
+                                            <strong>Alarm:</strong>
+                                            <span
+                                                [ngClass]="{ 'text-danger': alarmActive, 'text-muted': !alarmActive }">
+                                                {{ alarmActive ? 'ACTIVE' : 'Idle' }}
+                                            </span>
+                                        </p>
+                                    </div>
+
+                                    <div class="mt-3 mt-md-0 small text-muted text-md-end">
+                                        <div *ngIf="alarmActive">⚠ Alarm triggered</div>
+                                        <div *ngIf="!alarmActive && isLocked">🔒 Bike locked</div>
+                                        <div *ngIf="!alarmActive && !isLocked">🔓 Bike unlocked</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
 
                     </div>
                 </div>

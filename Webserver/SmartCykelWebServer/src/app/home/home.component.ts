@@ -31,6 +31,12 @@ export class HomeComponent implements OnInit {
   humidity: number | null = null;
   latitude: number | null = null;
   longitude: number | null = null;
+  speedKph: number | null = null;
+  temperatureC: number | null = null;
+
+  alarmActive = false;
+  isLocked = false;
+  lockStateText = 'UNKNOWN';
 
   estimatedRangeKm: number | null = null;
   lastRideSummary = 'No ride data yet.';
@@ -38,12 +44,39 @@ export class HomeComponent implements OnInit {
 
   constructor(private tbService: ThingsboardTestService) {}
 
-  ngOnInit(): void {
+    ngOnInit(): void {
     this.refreshTelemetry();
-
-    // optional: auto-refresh every 30 seconds
-    // setInterval(() => this.refreshTelemetry(), 30000);
+    this.refreshSecurity();
   }
+
+  refreshSecurity(): void {
+    this.tbService.getSecurityTelemetry().subscribe({
+      next: res => {
+        const alarm = this.getLatest(res, 'alarm');
+        const lock = this.getLatest(res, 'lock');
+        const lockBool = this.getLatest(res, 'lock_bool');
+
+        const toBool = (v: any) =>
+          v === true || v === 'true' || v === 1 || v === '1';
+
+        this.alarmActive = alarm ? toBool(alarm.value) : false;
+
+        if (lockBool) {
+          this.isLocked = toBool(lockBool.value);
+        } else if (lock) {
+          this.isLocked = String(lock.value).toUpperCase() === 'LOCKED';
+        } else {
+          this.isLocked = false;
+        }
+
+        this.lockStateText = lock ? String(lock.value) : (this.isLocked ? 'LOCKED' : 'UNLOCKED');
+      },
+      error: err => {
+        console.error('Failed to load security telemetry', err);
+      }
+    });
+  }
+
 
   private getLatest(raw: any, key: string): TbPoint | null {
     const arr = raw?.[key];
@@ -53,7 +86,7 @@ export class HomeComponent implements OnInit {
     return null;
   }
 
-  refreshTelemetry(): void {
+    refreshTelemetry(): void {
     this.tbService.getLatestTelemetry().subscribe({
       next: res => {
         // mark as connected if we got anything meaningful
@@ -80,7 +113,16 @@ export class HomeComponent implements OnInit {
         this.batteryState = state ? String(state.value) : '';
 
         const charging = this.getLatest(res, 'battery_charging');
-        this.batteryCharging = charging ? charging.value === 'true' || charging.value === true : false;
+        this.batteryCharging = charging
+          ? charging.value === 'true' || charging.value === true
+          : false;
+
+        // speed & temperature
+        const speed = this.getLatest(res, 'speed');
+        this.speedKph = speed ? Number(speed.value) || null : null;
+
+        const temp = this.getLatest(res, 'temperature_c');
+        this.temperatureC = temp ? Number(temp.value) || null : null;
 
         // humidity & location
         const hum = this.getLatest(res, 'humidity');
@@ -92,7 +134,7 @@ export class HomeComponent implements OnInit {
         const lon = this.getLatest(res, 'longitude');
         this.longitude = lon ? Number(lon.value) || null : null;
 
-        // estimated range – for now just fake: hours * 15 km/h
+        // estimated range
         if (this.batteryRemainingHours != null) {
           this.estimatedRangeKm = Math.round(this.batteryRemainingHours * 15);
         } else {
@@ -101,31 +143,23 @@ export class HomeComponent implements OnInit {
 
         // last update time – just use the newest ts we saw
         const allPoints = [
-          socPoint, remText, remH, volt, cur, hum, lat, lon
+          socPoint, remText, remH, volt, cur, hum, lat, lon, speed, temp
         ].filter(p => !!p) as TbPoint[];
         if (allPoints.length) {
           const maxTs = Math.max(...allPoints.map(p => p.ts));
           this.lastUpdate = new Date(maxTs);
         }
 
-        // simple last ride placeholder using location / soc
-        this.lastRideSummary = this.latitude != null && this.longitude != null
-          ? `Bike last seen at (${this.latitude.toFixed(4)}, ${this.longitude.toFixed(4)}), battery ${this.batteryLevel}%.`
-          : `Battery at ${this.batteryLevel}% – more ride data coming later.`;
+        // simple last ride placeholder
+        this.lastRideSummary =
+          this.speedKph != null && this.temperatureC != null
+            ? `Speed: ${this.speedKph.toFixed(1)} km/h • Temp: ${this.temperatureC.toFixed(1)} °C • Battery ${this.batteryLevel}%.`
+            : `Battery at ${this.batteryLevel}% – more ride data coming later.`;
       },
       error: err => {
         console.error('Failed to load telemetry', err);
         this.isConnected = false;
       }
     });
-  }
-
-  // existing button handlers
-  onStartRide(): void {
-    console.log('Start ride clicked');
-  }
-
-  onViewBikes(): void {
-    console.log('View bikes clicked');
   }
 }
