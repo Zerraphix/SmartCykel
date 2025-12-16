@@ -1,0 +1,59 @@
+.home-wrapper {
+  background: radial-gradient(circle at 0% 0%, #283046 0, #060814 45%, #020308 100%);
+  color: #f8f9fa;
+}
+
+.navbar {
+  backdrop-filter: blur(10px);
+}
+
+.brand-logo {
+  font-size: 1.35rem;
+}
+
+.card-glass {
+  background: rgba(22, 26, 36, 0.9);
+  border: 1px solid rgba(108, 117, 125, 0.4);
+  border-radius: 1rem;
+  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.5);
+}
+
+.card-title {
+  letter-spacing: 0.08em;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-dot.online {
+  background-color: #28a745;
+}
+
+.status-dot.offline {
+  background-color: #dc3545;
+}
+
+/* Make buttons feel a bit more modern in dark mode */
+.btn-primary {
+  border-radius: 999px;
+}
+
+.btn-outline-light {
+  border-radius: 999px;
+}
+
+/* Small screen tweaks */
+@media (max-width: 767.98px) {
+  h1.display-5 {
+    font-size: 1.8rem;
+  }
+}
+
+.security-alarm {
+  border-color: rgba(220,53,69,0.8);
+  box-shadow: 0 0 20px rgba(220,53,69,0.5);
+}

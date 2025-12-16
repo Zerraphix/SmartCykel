@@ -1,0 +1,177 @@
+<div class="home-wrapper min-vh-100 d-flex flex-column">
+    <!-- Top navbar -->
+    <nav class="navbar navbar-dark bg-dark shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <span class="brand-logo me-2">🚲</span>
+                <span>SmartBike Hub</span>
+            </a>
+
+            <button class="btn btn-outline-light btn-sm" [routerLink]="['/test']">
+                Test
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="flex-grow-1 d-flex align-items-center">
+        <div class="container py-4">
+            <div class="row g-4 align-items-center">
+                <!-- Left side: hero text + actions -->
+                <div class="col-lg-6">
+                    <h1 class="display-5 fw-semibold mb-3">
+                        Control your smart bicycle in one place
+                    </h1>
+                    <p class="lead text-muted">
+                        Get a quick overview of your bike’s connection, battery, location, and security status — all in
+                        one place. </p>
+                </div>
+
+                <!-- Right side: status / cards -->
+                <div class="col-lg-6">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="card card-glass h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title text-muted text-uppercase mb-2">
+                                        Connection
+                                    </h6>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="fs-5 fw-semibold">
+                                            {{ isConnected ? 'Online' : 'Offline' }}
+                                        </span>
+                                        <span class="status-dot" [class.online]="isConnected"
+                                            [class.offline]="!isConnected"></span>
+                                    </div>
+                                    <p class="small text-muted mt-2 mb-0">
+                                        <ng-container *ngIf="lastUpdate; else searching">
+                                            Last update: {{ lastUpdate | date:'short' }}
+                                            <span *ngIf="humidity != null"> • Humidity: {{ humidity }}%</span>
+                                        </ng-container>
+                                        <ng-template #searching>
+                                            Searching for your primary bike…
+                                        </ng-template>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card card-glass h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title text-muted text-uppercase mb-2">
+                                        Battery
+                                    </h6>
+
+                                    <p class="fs-5 fw-semibold mb-1">
+                                        {{ batteryLevel }}%
+                                        <span class="small text-muted ms-2" *ngIf="batteryState">
+                                            ({{ batteryState }}{{ batteryCharging ? ', charging' : '' }})
+                                        </span>
+                                    </p>
+
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar" role="progressbar" [style.width.%]="batteryLevel"
+                                            aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+
+                                    <p class="small text-muted mt-2 mb-0">
+                                        Remaining:
+                                        <ng-container *ngIf="batteryRemainingText; else noRem">
+                                            {{ batteryRemainingText }}
+                                            <span *ngIf="estimatedRangeKm"> • ~{{ estimatedRangeKm }} km</span>
+                                        </ng-container>
+                                        <ng-template #noRem>no estimate available</ng-template>
+                                    </p>
+
+                                    <p class="small text-muted mb-0 mt-1">
+                                        <span *ngIf="batteryVoltage != null">Voltage: {{ batteryVoltage }} V</span>
+                                        <span *ngIf="batteryCurrent != null"> • Current: {{ batteryCurrent }} mA</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-12">
+                            <div class="card card-glass h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title text-muted text-uppercase mb-2">
+                                        Last Seen
+                                    </h6>
+
+                                    <p class="mb-1">
+                                        {{ lastRideSummary }}
+                                    </p>
+
+                                    <p class="small mb-1">
+                                        <strong>Speed:</strong>
+                                        <span *ngIf="speedKph != null; else noSpeed">
+                                            {{ speedKph | number:'1.0-1' }} km/h
+                                        </span>
+                                        <ng-template #noSpeed>
+                                            <span class="text-muted">no speed data</span>
+                                        </ng-template>
+                                    </p>
+
+                                    <p class="small mb-1">
+                                        <strong>Temperature:</strong>
+                                        <span *ngIf="temperatureC != null; else noTemp">
+                                            {{ temperatureC | number:'1.0-1' }} °C
+                                        </span>
+                                        <ng-template #noTemp>
+                                            <span class="text-muted">no temperature data</span>
+                                        </ng-template>
+                                    </p>
+
+                                    <p class="small text-muted mb-0" *ngIf="latitude != null && longitude != null">
+                                        Last known location from device telemetry.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="card card-glass h-100" [class.security-alarm]="alarmActive">
+                                <div
+                                    class="card-body d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                                    <div>
+                                        <h6 class="card-title text-muted text-uppercase mb-2">
+                                            Security
+                                        </h6>
+                                        <p class="mb-1">
+                                            <strong>Lock:</strong>
+                                            <span [ngClass]="{ 'text-success': isLocked, 'text-warning': !isLocked }">
+                                                {{ lockStateText }}
+                                            </span>
+                                        </p>
+                                        <p class="mb-0">
+                                            <strong>Alarm:</strong>
+                                            <span
+                                                [ngClass]="{ 'text-danger': alarmActive, 'text-muted': !alarmActive }">
+                                                {{ alarmActive ? 'ACTIVE' : 'Idle' }}
+                                            </span>
+                                        </p>
+                                    </div>
+
+                                    <div class="mt-3 mt-md-0 small text-muted text-md-end">
+                                        <div *ngIf="alarmActive">⚠ Alarm triggered</div>
+                                        <div *ngIf="!alarmActive && isLocked">🔒 Bike locked</div>
+                                        <div *ngIf="!alarmActive && !isLocked">🔓 Bike unlocked</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="py-3 small text-center text-muted">
+        © 2025 SmartBike • v0.1
+    </footer>
+</div>
